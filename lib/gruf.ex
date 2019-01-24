@@ -1,18 +1,14 @@
 defmodule Gruf do
-  @moduledoc """
-  Documentation for Gruf.
-  """
+  use GenServer
 
-  @doc """
-  Hello world.
+  alias Gruf.State
+  alias Gruf.Util
 
-  ## Examples
+  def start_link() do
+    GenServer.start_link(__MODULE__, [])
+  end
 
-      iex> Gruf.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def init([]) do
+    {:ok, %State{}}
   end
 end
