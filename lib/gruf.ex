@@ -1,19 +1,15 @@
 defmodule Gruf do
-  use GenServer
+  alias Gruf.Server
 
-  alias Gruf.State
-  alias Gruf.Util
-
-  def start_link() do
-    GenServer.start_link(__MODULE__, [])
+  def start() do
+    Server.start_link()
   end
 
-  def init([]) do
-    {:ok, %State{}}
+  def add_flow(pid, initial_vertex) do
+    GenServer.cast(pid, {:add_flow, initial_vertex})
   end
 
-  def handle_cast({:add_flow, initial_vertex}, state) do
-    new_state = Util.add_flow(initial_vertex, state)
-    {:noreply, new_state}
+  def list_flow_ids(pid) do
+    GenServer.call(pid, :list_flow_ids)
   end
 end

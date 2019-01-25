@@ -16,6 +16,10 @@ defmodule Gruf.Util do
     %State{data: new_data, router: new_router}
   end
 
+  def list_flow_ids(%State{data: data}) do
+    {:ok, Map.keys(data)}
+  end
+
   defp gen_vertex_id() do
     ulid = Ulid.generate()
     "vertex:#{ulid}"
