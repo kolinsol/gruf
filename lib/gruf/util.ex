@@ -58,17 +58,22 @@ defmodule Gruf.Util do
     {:ok, Map.keys(data)}
   end
 
+  defp gen_edge_id() do
+    ulid = Ulid.generate()
+    "edge:#{ulid}"
+  end
+
   defp gen_vertex_id() do
     ulid = Ulid.generate()
     "vertex:#{ulid}"
   end
 
-  defp add_id(id, entity) do
-    Map.put(entity, :id, id)
-  end
-  
   defp gen_flow_id() do
     ulid = Ulid.generate()
     "flow:#{ulid}"
+  end
+  
+  defp add_id(id, entity) do
+    Map.put(entity, :id, id)
   end
 end
