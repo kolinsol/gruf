@@ -42,6 +42,18 @@ defmodule Gruf.Util do
     end
   end
 
+  def get_vertex(vertex_id, %State{data: data, router: router}) do
+    with {:vertex_route, {:ok, {vertex_flow_id, vertex_index}}} <- {:vertex_route, Map.fetch(router, vertex_id)}
+    do
+      flow_data = Map.get(data, vertex_flow_id)
+      vertex = :array.get(vertex_index, flow_data)
+      vertex
+    else
+      # TODO: return reasonable errors
+      _ -> :error
+    end
+  end
+
   def list_flow_ids(%State{data: data}) do
     {:ok, Map.keys(data)}
   end
