@@ -1,40 +1,46 @@
 defmodule Gruf.Util do
   alias Gruf.State
+  alias Gruf.Flow
+  alias Gruf.Vertex
+  alias Gruf.Router
+  alias Gruf.Storage
 
-  def add_flow(initial_vertex, %State{data: data, router: router}) do
-    flow_id = gen_flow_id()
-    vertex_id = gen_vertex_id()
+  def add_flow(vertex_data, %State{data: data, router: router}) do
+    vertex = Vertex.new(vertex_data)
+    flow = Flow.new(vertex)
 
-    new_data = Map.put(
-      data, flow_id, :array.set(
-        0, add_id(vertex_id, initial_vertex), :array.new()
-      )
-    )
+    new_data = Map.put(data, flow.id, flow)
 
     new_router = router
-      |> Map.put(flow_id, 0)
-      |> Map.put(vertex_id, {flow_id, 0})
+      |> Router.init_flow_index(flow.id)
+      |> Router.add_vertex(vertex.id, flow.id)
 
-    reply = {:ok, %{flow: flow_id, vertex: vertex_id, vertex_index: 0}}
+    reply = {:ok, %{flow: flow.id, vertex: vertex.id, vertex_index: 0}}
     {reply, %State{data: new_data, router: new_router}}
   end
 
-  def add_vertex(vertex, flow_id, %State{data: data, router: router} = state) do
-    with {:flow_data, {:ok, flow_data}} <- {:flow_data, Map.fetch(data, flow_id)},
-         {:last_flow_index, {:ok, last_flow_index}} <- {:last_flow_index, Map.fetch(router, flow_id)}
+  def add_vertex(vertex_data, flow_id, %State{data: data, router: router} = state) do
+    with {:flow, {:ok, flow}} <- {:flow, Flow.get_by_id(flow_id, data)}
     do
-      vertex_id = gen_vertex_id()
-      vertex_index = last_flow_index + 1
+      vertex = Vertex.new(vertex_data)
 
-      new_flow_data = :array.set(vertex_index, add_id(vertex_id, vertex), flow_data)
+      new_flow = flow
+        |> Flow.add_vertex(vertex, router)
 
-      new_data = Map.put(data, flow_id, new_flow_data)
+      new_data = Map.put(data, flow_id, new_flow)
 
       new_router = router
-        |> Map.put(flow_id, vertex_index)
-        |> Map.put(vertex_id, {flow_id, vertex_index})
+        |> Router.inc_flow_index(flow_id)
+        |> Router.add_vertex(vertex.id, flow_id)
 
-      reply = {:ok, %{flow: flow_id, vertex: vertex_id, vertex_index: vertex_index}}
+      reply = {
+        :ok,
+        %{
+          flow: flow_id,
+          vertex: vertex.id,
+          vertex_index: Router.get_flow_index(new_router, flow_id)
+        }
+      }
       {reply, %State{data: new_data, router: new_router}}
     else
       # TODO: return reasonable errors
@@ -63,16 +69,6 @@ defmodule Gruf.Util do
     "edge:#{ulid}"
   end
 
-  defp gen_vertex_id() do
-    ulid = Ulid.generate()
-    "vertex:#{ulid}"
-  end
-
-  defp gen_flow_id() do
-    ulid = Ulid.generate()
-    "flow:#{ulid}"
-  end
-  
   defp add_id(id, entity) do
     Map.put(entity, :id, id)
   end
