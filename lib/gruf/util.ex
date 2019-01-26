@@ -59,8 +59,4 @@ defmodule Gruf.Util do
       _ -> :error
     end
   end
-
-  def list_flow_ids(%State{data: data}) do
-    {:ok, Map.keys(data)}
-  end
 end

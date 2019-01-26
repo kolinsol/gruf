@@ -26,9 +26,4 @@ defmodule Gruf.Server do
     reply = Util.get_vertex(vertex_id, state)
     {:reply, reply, state}
   end
-
-  def handle_call(:list_flow_ids, _from, state) do
-    reply = Util.list_flow_ids(state)
-    {:reply, reply, state}
-  end
 end

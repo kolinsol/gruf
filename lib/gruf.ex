@@ -16,8 +16,4 @@ defmodule Gruf do
   def get_vertex(pid, vertex_id) do
     GenServer.call(pid, {:get_vertex, vertex_id})
   end
-
-  def list_flow_ids(pid) do
-    GenServer.call(pid, :list_flow_ids)
-  end
 end
