@@ -9,16 +9,16 @@ defmodule Gruf.Server do
   end
 
   def init([]) do
-    {:ok, %State{}}
+    {:ok, State.new()}
   end
 
-  def handle_call({:add_flow, initial_vertex}, _from, state) do
-    {reply, new_state} = Util.add_flow(initial_vertex, state)
+  def handle_call({:add_flow, vertex_data}, _from, state) do
+    {reply, new_state} = Util.add_flow(vertex_data, state)
     {:reply, reply, new_state}
   end
 
-  def handle_call({:add_vertex, vertex, flow_id}, _from, state) do
-    {reply, new_state} = Util.add_vertex(vertex, flow_id, state)
+  def handle_call({:add_vertex, vertex_data, flow_id}, _from, state) do
+    {reply, new_state} = Util.add_vertex(vertex_data, flow_id, state)
     {:reply, reply, new_state}
   end
 

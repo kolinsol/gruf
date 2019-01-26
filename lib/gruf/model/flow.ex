@@ -17,6 +17,10 @@ defmodule Gruf.Model.Flow do
     %{flow | data: new_data}
   end
 
+  def get_vertex(flow, index) do
+    :array.get(index, flow.data)
+  end
+
   def get_by_id(flow_id, flows) do
     Map.fetch(flows, flow_id)
   end
