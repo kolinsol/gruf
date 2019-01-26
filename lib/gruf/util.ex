@@ -1,9 +1,9 @@
 defmodule Gruf.Util do
   alias Gruf.State
-  alias Gruf.Flow
-  alias Gruf.Vertex
-  alias Gruf.Router
-  alias Gruf.Storage
+  alias Gruf.State.Router
+
+  alias Gruf.Model.Flow
+  alias Gruf.Model.Vertex
 
   def add_flow(vertex_data, %State{data: data, router: router}) do
     vertex = Vertex.new(vertex_data)
@@ -62,14 +62,5 @@ defmodule Gruf.Util do
 
   def list_flow_ids(%State{data: data}) do
     {:ok, Map.keys(data)}
-  end
-
-  defp gen_edge_id() do
-    ulid = Ulid.generate()
-    "edge:#{ulid}"
-  end
-
-  defp add_id(id, entity) do
-    Map.put(entity, :id, id)
   end
 end

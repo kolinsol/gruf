@@ -1,4 +1,4 @@
-defmodule Gruf.Flow do
+defmodule Gruf.Model.Flow do
   alias __MODULE__
 
   defstruct [:id, :data]

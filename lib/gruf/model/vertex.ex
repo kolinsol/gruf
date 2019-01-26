@@ -1,4 +1,4 @@
-defmodule Gruf.Vertex do
+defmodule Gruf.Model.Vertex do
   alias __MODULE__
 
   defstruct [:id, :type, :data, :edges]

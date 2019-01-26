@@ -1,5 +1,5 @@
-defmodule Gruf.Router do
-  alias Gruf.Flow
+defmodule Gruf.State.Router do
+  alias Gruf.Model.Flow
 
   def add_vertex(router, vertex_id, flow_id) do
     cur_flow_index = get_flow_index(router, flow_id)
