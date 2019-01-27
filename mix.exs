@@ -13,7 +13,8 @@ defmodule Gruf.MixProject do
 
   def application do
     [
-      applications: [:logger, :ulid]
+      applications: [:logger, :ulid],
+      mod: {Gruf.Application, []}
     ]
   end
 
