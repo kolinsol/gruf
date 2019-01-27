@@ -1,5 +1,7 @@
 # Gruf
 
+[![Build Status](https://travis-ci.org/verrchu/gruf.svg?branch=master)](https://travis-ci.org/verrchu/gruf)
+
 **TODO: Add description**
 
 ## Installation
