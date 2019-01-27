@@ -11,6 +11,11 @@ defmodule Gruf.Supervisor do
         id: Gruf.DynamicSupervisor,
         start: {Gruf.DynamicSupervisor, :start_link, [:ok]},
         type: :supervisor
+      },
+      %{
+        id: Gruf.Registry,
+        start: {Gruf.Registry, :start_link, [:ok]},
+        type: :worker
       }
     ]
 

@@ -1,6 +1,7 @@
 defmodule Gruf.Server do
   use GenServer
 
+  alias Gruf.Registry
   alias Gruf.State
   alias Gruf.Util
 
@@ -25,5 +26,14 @@ defmodule Gruf.Server do
   def handle_call({:get_vertex, vertex_id}, _from, state) do
     reply = Util.get_vertex(vertex_id, state)
     {:reply, reply, state}
+  end
+
+  def internal_call(name, msg) do
+    with {:ok, pid} <- Registry.get_pid_by_name(name)
+    do
+      GenServer.call(pid, msg)
+    else
+      _ -> {:error, "Name #{name} is not registered"}
+    end
   end
 end

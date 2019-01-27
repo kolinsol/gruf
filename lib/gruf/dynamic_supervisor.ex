@@ -1,6 +1,8 @@
 defmodule Gruf.DynamicSupervisor do
   use DynamicSupervisor
 
+  alias Gruf.Registry
+
   def start_link(args) do
     DynamicSupervisor.start_link(__MODULE__, args, name: __MODULE__)
   end
@@ -9,17 +11,32 @@ defmodule Gruf.DynamicSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def create(_name) do
-    child_spec = %{
-      id: Gruf.Server,
-      start: {Gruf.Server, :start_link, []},
-      type: :worker
-    }
+  def create(name) do
+    with true <- Registry.name_available?(name)
+    do
+      child_spec = %{
+        id: Gruf.Server,
+        start: {Gruf.Server, :start_link, []},
+        type: :worker
+      }
 
-    DynamicSupervisor.start_child(__MODULE__, child_spec)
+      {:ok, pid} = reply = DynamicSupervisor.start_child(__MODULE__, child_spec)
+      Registry.register(name, pid)
+
+      reply
+    else
+      _ -> {:error, "Name #{name} is already registered"}
+    end
   end
 
-  def remove(pid) do
-    DynamicSupervisor.terminate_child(__MODULE__, pid)
+  def remove(name) do
+    with false <- Registry.name_available?(name)
+    do
+      {:ok, pid} = Registry.get_pid_by_name(name)
+      :ok = DynamicSupervisor.terminate_child(__MODULE__, pid)
+      Registry.unregister(name, pid)
+    else
+      _ -> {:error, "Name #{name} is not registered"}
+    end
   end
 end
