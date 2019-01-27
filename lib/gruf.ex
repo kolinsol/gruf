@@ -1,8 +1,11 @@
 defmodule Gruf do
-  alias Gruf.Server
 
-  def start() do
-    Server.start_link()
+  def create(name) do
+    Gruf.DynamicSupervisor.create(name)
+  end
+
+  def remove(pid) do
+    Gruf.DynamicSupervisor.remove(pid)
   end
 
   def add_flow(pid, vertex_data) do
