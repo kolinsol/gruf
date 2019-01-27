@@ -1,32 +1,24 @@
 defmodule Gruf.Model.Flow do
   alias __MODULE__
 
-  defstruct [:id, :data]
+  defstruct [:id, :data, :index]
 
   def new(initial_vertex) do
     %Flow{
       id: gen_id(),
-      data: :array.set(0, initial_vertex, :array.new())
+      data: :array.set(0, initial_vertex, :array.new()),
+      index: 1
     }
   end
 
-  # TODO: remove router
-  def add_vertex(flow, vertex, router) do
-    index = get_next_index(flow.id, router)
-    new_data = :array.set(index, vertex, flow.data)
-    %{flow | data: new_data}
+  def add_vertex(flow, vertex) do
+    new_data = :array.set(flow.index, vertex, flow.data)
+    new_index = flow.index + 1
+    %{flow | data: new_data, index: new_index}
   end
 
   def get_vertex(flow, index) do
     :array.get(index, flow.data)
-  end
-
-  def get_by_id(flow_id, flows) do
-    Map.fetch(flows, flow_id)
-  end
-
-  def get_next_index(flow_id, router) do
-    Map.get(router, flow_id) + 1
   end
 
   def gen_id() do

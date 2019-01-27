@@ -3,7 +3,7 @@ defmodule Gruf.State.Storage do
     Map.put(storage, flow.id, flow)
   end
 
-  def put_flow(storage, flow) do
+  def update_flow(storage, flow) do
     Map.put(storage, flow.id, flow)
   end
 
