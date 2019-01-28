@@ -32,7 +32,7 @@ defmodule Gruf.DynamicSupervisor do
   def remove(name) do
     with false <- Registry.name_available?(name)
     do
-      {:ok, pid} = Registry.get_pid_by_name(name)
+      {:ok, pid} = Registry.name2pid(name)
       :ok = DynamicSupervisor.terminate_child(__MODULE__, pid)
       Registry.unregister(name, pid)
     else

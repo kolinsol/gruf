@@ -29,7 +29,7 @@ defmodule Gruf.Server do
   end
 
   def internal_call(name, msg) do
-    with {:ok, pid} <- Registry.get_pid_by_name(name)
+    with {:ok, pid} <- Registry.name2pid(name)
     do
       GenServer.call(pid, msg)
     else

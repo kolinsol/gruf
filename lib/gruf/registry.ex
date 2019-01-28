@@ -39,7 +39,7 @@ defmodule Gruf.Registry do
     {:reply, reply, state}
   end
 
-  def handle_call({:get_pid_by_name, name}, _from, state) do
+  def handle_call({:name2pid, name}, _from, state) do
     with [{_name, pid}] <- :ets.lookup(@name2pid, name)
     do
       {:reply, {:ok, pid}, state}
@@ -48,7 +48,7 @@ defmodule Gruf.Registry do
     end
   end
 
-  def handle_call({:get_name_by_pid, pid}, _from, state) do
+  def handle_call({:pid2name, pid}, _from, state) do
     with [{_pid, name}] <- :ets.lookup(@pid2name, pid)
     do
       {:reply, {:ok, name}, state}
@@ -69,11 +69,11 @@ defmodule Gruf.Registry do
     GenServer.call(__MODULE__, {:is_name_available, name})
   end
 
-  def get_name_by_pid(pid) do
-    GenServer.call(__MODULE__, {:get_name_by_pid, pid})
+  def pid2name(pid) do
+    GenServer.call(__MODULE__, {:pid2name, pid})
   end
 
-  def get_pid_by_name(name) do
-    GenServer.call(__MODULE__, {:get_pid_by_name, name})
+  def name2pid(name) do
+    GenServer.call(__MODULE__, {:name2pid, name})
   end
 end
