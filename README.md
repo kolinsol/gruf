@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/verrchu/gruf.svg?branch=master)](https://travis-ci.org/verrchu/gruf)
 [![Coverage Status](https://coveralls.io/repos/github/verrchu/gruf/badge.svg?branch=master)](https://coveralls.io/github/verrchu/gruf?branch=master)
+[![Package Version](https://img.shields.io/hexpm/v/gruf.svg)](https://hex.pm/packages/gruf)
 
 **TODO: Add description**
 
