@@ -1,8 +1,12 @@
 defmodule GrufTest do
   use ExUnit.Case
-  doctest Gruf
+  use PropCheck
 
-  test "greets the world" do
-    assert Gruf.hello() == :world
+  property "always works" do
+    forall type <- term() do
+      boolean(type)
+    end
   end
+
+  def boolean(_), do: true
 end

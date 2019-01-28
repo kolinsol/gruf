@@ -20,7 +20,8 @@ defmodule Gruf.MixProject do
 
   defp deps do
     [
-      {:ulid, "~> 0.2.0"}
+      {:ulid, "~> 0.2.0"},
+      {:propcheck, "~> 1.1", only: [:test, :dev]}
     ]
   end
 end
