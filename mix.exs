@@ -7,7 +7,8 @@ defmodule Gruf.MixProject do
       version: "0.1.0",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -20,8 +21,9 @@ defmodule Gruf.MixProject do
 
   defp deps do
     [
-      {:ulid, "~> 0.2.0"},
-      {:propcheck, "~> 1.1", only: [:test, :dev]}
+      {:ulid, "~> 0.2"},
+      {:propcheck, "~> 1.1", only: :test},
+      {:excoveralls, "~> 0.10", only: :test}
     ]
   end
 end
