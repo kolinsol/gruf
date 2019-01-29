@@ -12,7 +12,7 @@ defmodule Gruf.MixProject do
       description: description(),
       package: package(),
       deps: deps(),
-      test_coverage: [tool: ExCoveralls],
+      test_coverage: [tool: Coverex.Task, coveralls: true],
       source_url: "https://github.com/verrchu/gruf"
     ]
   end
@@ -29,7 +29,7 @@ defmodule Gruf.MixProject do
       {:ulid, "~> 0.2"},
       {:ex_doc, "~> 0.19", only: :dev},
       {:propcheck, "~> 1.1", only: :test},
-      {:excoveralls, "~> 0.10", only: :test}
+      {:coverex, "~> 1.5", only: :test}
     ]
   end
 
