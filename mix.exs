@@ -27,6 +27,7 @@ defmodule Gruf.MixProject do
   defp deps() do
     [
       {:ulid, "~> 0.2"},
+      {:ex_doc, "~> 0.19", only: :dev},
       {:propcheck, "~> 1.1", only: :test},
       {:excoveralls, "~> 0.10", only: :test}
     ]
