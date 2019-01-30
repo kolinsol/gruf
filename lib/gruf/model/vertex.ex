@@ -3,10 +3,10 @@ defmodule Gruf.Model.Vertex do
 
   defstruct [:id, :type, :data, :edges]
 
-  def new(initial_data) do
+  def new(type, initial_data) do
     %Vertex{
       id: gen_id(),
-      type: :initial,
+      type: type,
       data: initial_data,
       edges: []
     }
