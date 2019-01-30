@@ -1,6 +1,8 @@
 defmodule Gruf.Model.Flow do
   alias __MODULE__
 
+  alias Gruf.Model.Vertex
+
   defstruct [:id, :data, :status]
 
   def new(initial_vertex) do
@@ -19,6 +21,20 @@ defmodule Gruf.Model.Flow do
     %{flow | data: new_data, status: new_status}
   end
 
+  def link_vertex(flow, new_vertex) do
+    last_vertex = get_last_vertex(flow)
+    last_index = get_last_index(flow)
+    updated_last_vertex =
+      Vertex.update_phantom_edge(last_vertex, new_vertex.id)
+
+    insert_vertex(flow, updated_last_vertex, last_index)
+  end
+
+  def insert_vertex(flow, vertex, index) do
+    new_data = :array.set(index, vertex, flow.data)
+    %{flow | data: new_data}
+  end
+
   def get_vertex(flow, index) do
     :array.get(index, flow.data)
   end
@@ -29,6 +45,11 @@ defmodule Gruf.Model.Flow do
 
   def get_last_index(flow) do
     flow.status[:index]
+  end
+
+  def get_last_vertex(flow) do
+    current_index = get_last_index(flow)
+    :array.get(current_index, flow.data)
   end
 
   def get_last_vertex_id(flow) do

@@ -33,6 +33,7 @@ defmodule Gruf.Util do
     vertex_index = Flow.get_next_index(flow)
 
     new_flow = flow
+      |> Flow.link_vertex(vertex)
       |> Flow.add_vertex(vertex)
 
     new_storage = storage

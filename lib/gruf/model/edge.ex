@@ -20,6 +20,10 @@ defmodule Gruf.Model.Edge do
     }
   end
 
+  def update_phantom_edge(edge, to_vertex_id) do
+    %{edge | type: :solid, to: to_vertex_id}
+  end
+
   defp gen_id() do
     ulid = Ulid.generate()
     "edge:#{ulid}"
