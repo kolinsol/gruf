@@ -30,7 +30,7 @@ defmodule Gruf.Util do
   def add_vertex(vertex_data, flow_id, %State{storage: storage, router: router}) do
     flow = Storage.get_flow(storage, flow_id)
     vertex = Vertex.new(:regular, vertex_data)
-    vertex_index = flow.index
+    vertex_index = Flow.get_next_index(flow)
 
     new_flow = flow
       |> Flow.add_vertex(vertex)
