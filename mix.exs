@@ -27,7 +27,13 @@ defmodule Gruf.MixProject do
   defp deps() do
     [
       {:ulid, "~> 0.2"},
-      {:ex_doc, "~> 0.19", only: :dev},
+
+      {:benchee, "~> 0.13", only: :dev},
+      {:rexbug, "~> 1.0", only: :dev},
+
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.4", only: :dev, runtime: false},
+
       {:propcheck, "~> 1.1", only: :test},
       {:coverex, "~> 1.5", only: :test}
     ]
