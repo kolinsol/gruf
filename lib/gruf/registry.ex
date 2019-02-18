@@ -1,6 +1,7 @@
 defmodule Gruf.Registry do
   use GenServer
 
+  # TODO: add pprocess monitoring
   @name2pid :gruf_name2pid
   @pid2name :gruf_pid2name
 

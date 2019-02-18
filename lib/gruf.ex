@@ -9,6 +9,16 @@ defmodule Gruf do
     Gruf.DynamicSupervisor.remove(name)
   end
 
+  # Gruf API
+  #
+  # add_flow
+  # add_vertex
+  # get_vertex
+  # split_flow
+  # branch_flow
+  # link_vertex
+
+  # TODO: consider reimplementing this as a call to add_vertex
   def add_flow(name, vertex_data) do
     Server.internal_call(name, {:add_flow, vertex_data})
   end
