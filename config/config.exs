@@ -8,14 +8,9 @@ use Mix.Config
 # if you want to provide default values for your application for
 # third-party users, it should be done in your "mix.exs" file.
 
-# You can configure your application as:
-#
-#     config :gruf, key: :value
-#
-# and access this configuration in your application as:
-#
-#     Application.get_env(:gruf, :key)
-#
+config :gruf, dets_db_file_name: :gruf_db
+config :gruf, table_access_mode: :protected
+
 # You can also configure a third-party app:
 #
 #     config :logger, level: :info

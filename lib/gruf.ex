@@ -1,11 +1,11 @@
 defmodule Gruf do
   alias Gruf.Server
 
-  def create(name) do
+  def start_session(name) do
     Gruf.DynamicSupervisor.create(name)
   end
 
-  def remove(name) do
+  def finish_session(name) do
     Gruf.DynamicSupervisor.remove(name)
   end
 

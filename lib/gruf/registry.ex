@@ -1,32 +1,45 @@
 defmodule Gruf.Registry do
   use GenServer
 
-  # TODO: add pprocess monitoring
   @name2pid :gruf_name2pid
   @pid2name :gruf_pid2name
+
+  @db_name Application.get_env(:gruf, :dets_db_file_name)
+  @table_access_mode Application.get_env(:gruf, :table_access_mode)
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args, name: __MODULE__)
   end
 
-  # TODO: make the tables private
   def init(_args) do
-    :ets.new(@name2pid, [:set, :protected, :named_table])
-    :ets.new(@pid2name, [:set, :protected, :named_table])
+    :ets.new(@name2pid, [:set, @table_access_mode, :named_table])
+    :ets.new(@pid2name, [:set, @table_access_mode, :named_table])
 
-    {:ok, []}
+    {:ok, @db_name} = :dets.open_file(@db_name, [])
+
+    state = init_state()
+
+    {:ok, state}
   end
 
   def handle_cast({:register, {name, pid}}, state) do
     :ets.insert(@name2pid, {name, pid})
     :ets.insert(@pid2name, {pid, name})
 
-    {:noreply, state}
+    new_state = add_monitor(state, pid)
+
+    {:noreply, new_state}
   end
 
   def handle_cast({:unregister, {name, pid}}, state) do
     :ets.delete(@name2pid, name)
     :ets.delete(@pid2name, pid)
+
+    {:noreply, state}
+  end
+
+  def handle_cast({:persist_state, name, bin_state}, state) do
+    :dets.insert(@db_name, {name, bin_state})
 
     {:noreply, state}
   end
@@ -58,6 +71,37 @@ defmodule Gruf.Registry do
     end
   end
 
+  def handle_call({:get_state, name}, _from, state) do
+    res = case :dets.lookup(@db_name, name) do
+      [] -> []
+      [{^name, bin_state}] -> bin_state
+    end
+
+    {:reply, {:ok, res}, state}
+  end
+
+  def handle_info({_msg, monitor_ref, :process, _pid, _reason}, state) do
+    new_state = remove_monitor(state, monitor_ref)
+
+    {:noreply, new_state}
+  end
+
+  defp init_state() do
+    MapSet.new()
+  end
+
+  defp add_monitor(monitors, pid) do
+    monitor_ref = Process.monitor(pid)
+
+    MapSet.put(monitors, monitor_ref)
+  end
+
+  defp remove_monitor(monitors, monitor_ref) do
+    true = Process.demonitor(monitor_ref)
+
+    MapSet.delete(monitors, monitor_ref)
+  end
+
   def register(name, pid) do
     GenServer.cast(__MODULE__, {:register, {name, pid}})
   end
@@ -76,5 +120,14 @@ defmodule Gruf.Registry do
 
   def name2pid(name) do
     GenServer.call(__MODULE__, {:name2pid, name})
+  end
+
+  def persist_state(pid, bin_state) do
+    {:ok, name} = pid2name(pid)
+    GenServer.cast(__MODULE__, {:persist_state, name, bin_state})
+  end
+
+  def get_state(name) do
+    GenServer.call(__MODULE__, {:get_state, name})
   end
 end

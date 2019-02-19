@@ -14,9 +14,11 @@ defmodule Gruf.DynamicSupervisor do
   def create(name) do
     with true <- Registry.name_available?(name)
     do
+      {:ok, bin_state} = Registry.get_state(name)
+
       child_spec = %{
         id: Gruf.Server,
-        start: {Gruf.Server, :start_link, []},
+        start: {Gruf.Server, :start_link, [bin_state]},
         type: :worker
       }
 

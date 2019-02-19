@@ -5,12 +5,20 @@ defmodule Gruf.Server do
   alias Gruf.State
   alias Gruf.Util
 
-  def start_link() do
-    GenServer.start_link(__MODULE__, [])
+  def start_link(args) do
+    GenServer.start_link(__MODULE__, args)
   end
 
-  def init([]) do
-    {:ok, State.new()}
+  def init(args) do
+    Process.flag(:trap_exit, true)
+
+    case args do
+      [] ->
+        {:ok, State.new()}
+      bin_state when is_binary(bin_state) ->
+        state = :erlang.binary_to_term(bin_state)
+        {:ok, state}
+    end
   end
 
   def handle_call({:add_flow, vertex_data}, _from, state) do
@@ -35,5 +43,10 @@ defmodule Gruf.Server do
     else
       _ -> {:error, "Name #{name} is not registered"}
     end
+  end
+
+  def terminate(_reason, state) do
+    bin_state = :erlang.term_to_binary(state)
+    Registry.persist_state(self(), bin_state)
   end
 end
