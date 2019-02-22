@@ -41,7 +41,17 @@ defmodule Gruf.Registry do
   end
 
   def handle_cast({:dump_state, name, bin_state}, state) do
-    :dets.insert(@db_name, {name, bin_state})
+    state_hash = :crypto.hash(:sha256, bin_state)
+    case :dets.lookup(@db_name, name) do
+      [{^name, {^state_hash, _bin_state}}] ->
+        Logger.debug("State hasn't changed")
+      [{^name, {_state_hash, _bin_state}}] ->
+        Logger.debug("Updating state dump")
+        :dets.insert(@db_name, {name, {state_hash, bin_state}})
+      [] ->
+        Logger.debug("Inserting new state dump")
+        :dets.insert(@db_name, {name, {state_hash, bin_state}})
+    end
 
     {:noreply, state}
   end
@@ -76,7 +86,7 @@ defmodule Gruf.Registry do
   def handle_call({:get_state, name}, _from, state) do
     res = case :dets.lookup(@db_name, name) do
       [] -> []
-      [{^name, bin_state}] -> bin_state
+      [{^name, {_state_hash, bin_state}}] -> bin_state
     end
 
     {:reply, {:ok, res}, state}

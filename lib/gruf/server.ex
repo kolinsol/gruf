@@ -27,17 +27,17 @@ defmodule Gruf.Server do
 
   def handle_call({:add_flow, vertex_data}, _from, state) do
     {reply, new_state} = Util.add_flow(vertex_data, state)
-    {:reply, reply, new_state}
+    {:reply, reply, new_state, @dump_interval}
   end
 
   def handle_call({:add_vertex, vertex_data, flow_id}, _from, state) do
     {reply, new_state} = Util.add_vertex(vertex_data, flow_id, state)
-    {:reply, reply, new_state}
+    {:reply, reply, new_state, @dump_interval}
   end
 
   def handle_call({:get_vertex, vertex_id}, _from, state) do
     reply = Util.get_vertex(vertex_id, state)
-    {:reply, reply, state}
+    {:reply, reply, state, @dump_interval}
   end
 
   def handle_info(:timeout, state) do
