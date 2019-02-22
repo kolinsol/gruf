@@ -5,6 +5,10 @@ defmodule Gruf.Server do
   alias Gruf.State
   alias Gruf.Util
 
+  require Logger
+
+  @dump_interval Application.get_env(:gruf, :dump_interval)
+
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
   end
@@ -14,10 +18,10 @@ defmodule Gruf.Server do
 
     case args do
       [] ->
-        {:ok, State.new()}
+        {:ok, State.new(), @dump_interval}
       bin_state when is_binary(bin_state) ->
         state = :erlang.binary_to_term(bin_state)
-        {:ok, state}
+        {:ok, state, @dump_interval}
     end
   end
 
@@ -36,6 +40,11 @@ defmodule Gruf.Server do
     {:reply, reply, state}
   end
 
+  def handle_info(:timeout, state) do
+    dump_state(state)
+    {:noreply, state, @dump_interval}
+  end
+
   def internal_call(name, msg) do
     with {:ok, pid} <- Registry.name2pid(name)
     do
@@ -45,8 +54,12 @@ defmodule Gruf.Server do
     end
   end
 
-  def terminate(_reason, state) do
+  defp dump_state(state) do
     bin_state = :erlang.term_to_binary(state)
-    Registry.persist_state(self(), bin_state)
+    Registry.dump_state(self(), bin_state)
+  end
+
+  def terminate(_reason, state) do
+    dump_state(state)
   end
 end

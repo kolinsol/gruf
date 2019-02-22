@@ -6,7 +6,7 @@ defmodule Gruf.MixProject do
       app: :gruf,
       name: "gruf",
       version: "0.1.0",
-      elixir: "~> 1.8",
+      elixir: "~> 1.6",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env() == :prod,
       description: description(),

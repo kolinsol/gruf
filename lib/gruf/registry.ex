@@ -1,6 +1,8 @@
 defmodule Gruf.Registry do
   use GenServer
 
+  require Logger
+
   @name2pid :gruf_name2pid
   @pid2name :gruf_pid2name
 
@@ -38,7 +40,7 @@ defmodule Gruf.Registry do
     {:noreply, state}
   end
 
-  def handle_cast({:persist_state, name, bin_state}, state) do
+  def handle_cast({:dump_state, name, bin_state}, state) do
     :dets.insert(@db_name, {name, bin_state})
 
     {:noreply, state}
@@ -122,9 +124,12 @@ defmodule Gruf.Registry do
     GenServer.call(__MODULE__, {:name2pid, name})
   end
 
-  def persist_state(pid, bin_state) do
+  def dump_state(pid, bin_state) do
     {:ok, name} = pid2name(pid)
-    GenServer.cast(__MODULE__, {:persist_state, name, bin_state})
+
+    Logger.info("Dumping state of {#{name}, #{inspect pid}}")
+
+    GenServer.cast(__MODULE__, {:dump_state, name, bin_state})
   end
 
   def get_state(name) do

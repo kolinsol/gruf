@@ -10,6 +10,7 @@ use Mix.Config
 
 config :gruf, dets_db_file_name: :gruf_db
 config :gruf, table_access_mode: :protected
+config :gruf, dump_interval: 60000
 
 # You can also configure a third-party app:
 #
