@@ -5,6 +5,7 @@ defmodule Gruf.Registry do
 
   @name2pid :gruf_name2pid
   @pid2name :gruf_pid2name
+  @state_hashes :gruf_state_hashes
 
   @db_name Application.get_env(:gruf, :dets_db_file_name)
   @table_access_mode Application.get_env(:gruf, :table_access_mode)
@@ -16,6 +17,7 @@ defmodule Gruf.Registry do
   def init(_args) do
     :ets.new(@name2pid, [:set, @table_access_mode, :named_table])
     :ets.new(@pid2name, [:set, @table_access_mode, :named_table])
+    :ets.new(@state_hashes, [:set, @table_access_mode, :named_table])
 
     {:ok, @db_name} = :dets.open_file(@db_name, [])
 
@@ -42,15 +44,17 @@ defmodule Gruf.Registry do
 
   def handle_cast({:dump_state, name, bin_state}, state) do
     state_hash = :crypto.hash(:sha256, bin_state)
-    case :dets.lookup(@db_name, name) do
-      [{^name, {^state_hash, _bin_state}}] ->
+    case :ets.lookup(@state_hashes, name) do
+      [{^name, ^state_hash}] ->
         Logger.debug("State hasn't changed")
-      [{^name, {_state_hash, _bin_state}}] ->
+      [{^name, _state_hash}] ->
         Logger.debug("Updating state dump")
-        :dets.insert(@db_name, {name, {state_hash, bin_state}})
+        :ets.insert(@state_hashes, {name, state_hash})
+        :dets.insert(@db_name, {name, bin_state})
       [] ->
         Logger.debug("Inserting new state dump")
-        :dets.insert(@db_name, {name, {state_hash, bin_state}})
+        :ets.insert(@state_hashes, {name, state_hash})
+        :dets.insert(@db_name, {name, bin_state})
     end
 
     {:noreply, state}
@@ -86,7 +90,7 @@ defmodule Gruf.Registry do
   def handle_call({:get_state, name}, _from, state) do
     res = case :dets.lookup(@db_name, name) do
       [] -> []
-      [{^name, {_state_hash, bin_state}}] -> bin_state
+      [{^name, bin_state}] -> bin_state
     end
 
     {:reply, {:ok, res}, state}
